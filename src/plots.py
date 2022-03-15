@@ -3,19 +3,18 @@
 from datetime import datetime
 import time
 import csv
-#import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 def Sensor():
-    def __init__(T=0, RH=0):
+    def __init__(self, T=0, RH=0):
         self.t  = T
         self.rh = RH
 
 def Data():
 
-    def __init__(tstamp=None, sensors=None):
+    def __init__(self, tstamp=None, sensors=None):
         self.tstamp  = tstamp
         self.sensors = sensors
         #
@@ -95,76 +94,6 @@ def read_and_plot():
     plt.savefig(dbdir + '24hrs.png', dpi=300, bbox_inches='tight')
     #pickle.dump(fig, open(dbdir + '24hrs.fig.pickle', 'wb'))
     #print('saved 24hrs')
-
-
-def read_and_plot_repeat():
-
-    dbdir  = '/home/pi/repos/raumklima/database/'
-    interval = 60*5 # seconds
-
-    while True:
-
-        now  = datetime.now()
-        tstamp = now.strftime('%Y-%m-%d %H:%M:%S')
-
-        year = now.year
-        wnum = now.isocalendar()[1]
-
-        fpath = dbdir + '{:4d}/'.format(year)
-        fname = 'w{:02d}.csv'.format(wnum)
-
-        # read database
-        ifile = open(fpath + fname, 'r')
-        csvreader = csv.reader(ifile)
-        rows = []
-        for row in csvreader:
-            rows.append(row)
-        ifile.close()
-
-        # convert data
-        nsensors = len(rows[0])-1
-        table = np.zeros(2*nsensors+1)
-        for row in rows:
-            tstamp = datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S')
-            sensors = np.zeros(2*nsensors)
-            for s in range(nsensors):
-                T  = float(row[1+s][0:6])
-                RH = float(row[1+s][7:])
-                sensors[2*s:2*s+2] = [T, RH]
-            table = np.vstack( (table,  np.append(np.array([tstamp]), sensors)) )
-
-        table = np.delete(table, (0), axis=0)
-
-        # Plot last 24 hrs
-        nback = 24*60
-        fig = plt.figure(1); fig.clear()
-        fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, num=fig.number)
-        for s in range(nsensors):
-            ax[0].plot(table[-nback:, 0], table[-nback:, 1+2*s]  )
-            ax[1].plot(table[-nback:, 0], table[-nback:, 1+2*s+1], label=snames[s])
-        ax[1].xaxis.set_major_formatter(
-                    mdates.ConciseDateFormatter(ax[1].xaxis.get_major_locator()))
-        # Shrink current axis's height by 10% on the bottom
-        box = ax[1].get_position()
-        ax[1].set_position([box.x0, box.y0 + box.height * 0.1,
-                             box.width, box.height * 0.9])
-        # Put a legend below current axis
-        ax[1].legend(loc='upper center', bbox_to_anchor=(0.40, -0.10),
-                          fancybox=True, shadow=False, ncol=5, fontsize='small')
-        ax[0].set_ylabel('Temp')
-        ax[1].set_ylabel('RH')
-        #ax[1].set_xlabel('Time')
-        ax[1].set_xlim([table[max(-nback, -table.shape[0]),0], table[-1,0]])
-        ax[1].set_ylim([35, 60])
-        ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
-        ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
-        plt.draw()
-        plt.savefig(dbdir + '24hrs.png', dpi=300, bbox_inches='tight')
-        #pickle.dump(fig, open(dbdir + '24hrs.fig.pickle', 'wb'))
-        #print('saved 24hrs')
-
-
-        time.sleep(interval)
 
 
 if __name__ == '__main__':
