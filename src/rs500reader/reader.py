@@ -10,15 +10,15 @@ from .do import Response, TempHum
 class Rs500Reader(object):
 
     def __init__(self, vendor_id=0x0483, product_id=0x5750):
-        self.__vendor = vendor_id
-        self.__product = product_id
+        self.vendor = vendor_id
+        self.product = product_id
 
     def __query(self) -> list:
         try:
             rs500_hid = hid.device()
-            rs500_hid.open(self.__vendor, self.__product)
+            rs500_hid.open(self.vendor, self.product)
             rs500_hid.set_nonblocking(1)
-            # Anfrage 04, liefert die Temperaturen und Luftfeuchten
+            # Inquiry 04, returns the temperatures and humidity
             rs500_hid.write([0x7b, 0x03, 0x40, 0x7d] + [0] * 60)
             time.sleep(0.75)
             data = []
@@ -32,8 +32,8 @@ class Rs500Reader(object):
             return data
         except IOError as e:
             print(
-                'Lesefehler beim Lesen von des HID Devices: "{}"; entweder ist die Hardware nicht vorhanden oder '
-                'defekt, oder es liegt ein Rechteproblem vor.'.format(e),
+                'Read error reading from HID device: "{}"; either the hardware is not present or '
+                'defective, or there is a permissions problem.'.format(s),
                 file=stderr
             )
             raise
@@ -44,7 +44,7 @@ class Rs500Reader(object):
         except IOError:
             return None
         if len(data) != 64:
-            print('ungültige Länge: {}'.format(len(data)), file=stderr)
+            print('Invalid length: {}'.format(len(data)), file=stderr)
             return None
         response = Response()
         channel = 0
