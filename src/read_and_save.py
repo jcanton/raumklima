@@ -4,6 +4,7 @@ from rs500reader.reader import Rs500Reader
 from datetime import datetime
 import time, os
 
+nsensors = 5
 
 def get_and_save():
 
@@ -30,7 +31,7 @@ def get_and_save():
             #ofile.write(', {:4.1f} | {:2d}'.format(chan_data.temperature, chan_data.humidity))
             cd.append( chan_data )
 
-    if len(cd) > 0:
+    if len(cd) == nsensors:
         ofile = open(fpath + fname, 'a')
         ofile.write(tstamp)
         for i in range(len(cd)):
