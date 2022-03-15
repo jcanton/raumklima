@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from datetime import datetime
-import time
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +13,7 @@ def Sensor():
 
 def Data():
 
-    def __init__(self, tstamp=None, sensors=None):
+    def __init__(self, tstamp=None, sensors=[]):
         self.tstamp  = tstamp
         self.sensors = sensors
         #
@@ -32,21 +31,10 @@ snames = [
         'Cucina'
         ]
 
-def read_and_plot():
-
-    dbdir  = '/home/pi/repos/raumklima/database/'
-
-    now  = datetime.now()
-    tstamp = now.strftime('%Y-%m-%d %H:%M:%S')
-
-    year = now.year
-    wnum = now.isocalendar()[1]
-
-    fpath = dbdir + '{:4d}/'.format(year)
-    fname = 'w{:02d}.csv'.format(wnum)
+def readDB(fpath):
 
     # read database
-    ifile = open(fpath + fname, 'r')
+    ifile = open(fpath, 'r')
     csvreader = csv.reader(ifile)
     rows = []
     for row in csvreader:
@@ -66,6 +54,12 @@ def read_and_plot():
         table = np.vstack( (table,  np.append(np.array([tstamp]), sensors)) )
 
     table = np.delete(table, (0), axis=0)
+
+    return table, nsensors
+
+def do24hrsPlot(dbdir, fpath):
+
+    table, nsensors = readDB(fpath)
 
     # Plot last 24 hrs
     nback = 24*60
@@ -94,6 +88,23 @@ def read_and_plot():
     plt.savefig(dbdir + '24hrs.png', dpi=300, bbox_inches='tight')
     #pickle.dump(fig, open(dbdir + '24hrs.fig.pickle', 'wb'))
     #print('saved 24hrs')
+
+def doAvgPlot(dbdir, fpath):
+
+def read_and_plot(plotKind='24hr'):
+
+    dbdir  = '/home/pi/repos/raumklima/database/'
+
+    now  = datetime.now()
+    year = now.year
+    wnum = now.isocalendar()[1]
+
+    if plotKind == '24hrs':
+        fpath = dbdir + '{:4d}/'.format(year)
+        fname = 'w{:02d}.csv'.format(wnum)
+        do24hrsPlot(dbdir, fpath + fname)
+    elif plotKind == 'avg':
+        doAvgPlot(dbdir, fpath)
 
 
 if __name__ == '__main__':
