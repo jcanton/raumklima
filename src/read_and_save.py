@@ -5,13 +5,13 @@ from datetime import datetime
 import time, os
 
 nsensors = 5
+maxTries = 10
 
 def get_and_save():
 
     reader = Rs500Reader()
     dbdir  = '/home/pi/repos/raumklima/database/'
 
-    data = reader.get_data()
     now  = datetime.now()
     tstamp = now.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -25,18 +25,22 @@ def get_and_save():
         os.makedirs(fpath)
 
     cd = []
-    for i in range(1, 9, 1):
-        chan_data = data.get_channel_data(i)
-        if chan_data is not None:
-            #ofile.write(', {:4.1f} | {:2d}'.format(chan_data.temperature, chan_data.humidity))
-            cd.append( chan_data )
+    tryNr = 0
+    while (len(cd) != nsensors) and (tryNr < maxTries):
+        data = reader.get_data()
+        cd = []
+        tryNr += 1
+        for i in range(1, 9, 1):
+            chan_data = data.get_channel_data(i)
+            if chan_data is not None:
+                cd.append( chan_data )
 
     if len(cd) == nsensors:
         ofile = open(fpath + fname, 'a')
         ofile.write(tstamp)
         for i in range(len(cd)):
             ofile.write(', {:4.1f} | {:2d}'.format(cd[i].temperature, cd[i].humidity))
-
+    
         ofile.write('\n')
         ofile.close()
 
