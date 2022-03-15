@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 from datetime import datetime
 import glob
 import csv
@@ -152,4 +153,9 @@ def read_and_plot(plotKind='avg'):
 
 
 if __name__ == '__main__':
-    read_and_plot()
+
+    parser = argparse.ArgumentParser(description = "Make plots.")
+    parser.add_argument('-k', '--kind', type=str, default='24hrs', help="what plots")
+    args = parser.parse_args()
+
+    read_and_plot(plotKind=args.kind)
