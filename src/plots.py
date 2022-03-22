@@ -11,8 +11,8 @@ import matplotlib.dates as mdates
 #-------------------------------------------------------------------------------
 # Data
 #
-#dbdir  = '/home/pi/repos/raumklima/database/'
-dbdir  = '/Users/jcanton/SynologyDrive/githubStuff/raumklima/database/'
+dbdir  = '/home/pi/repos/raumklima/database/'
+#dbdir  = '/Users/jcanton/SynologyDrive/githubStuff/raumklima/database/'
 nsensors = 5
 snames = [
         'Sala',
@@ -94,7 +94,7 @@ def doPlot(table, nback=0, figName='fig.png'):
     ax[1].set_ylabel('RH')
     #ax[1].set_xlabel('Time')
     ax[1].set_xlim([table[max(nback, -table.shape[0]),0], table[-1,0]])
-    ax[1].set_ylim([30, 60])
+    ax[1].set_ylim([25, 60])
     ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
     ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
     plt.draw()
