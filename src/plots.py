@@ -13,13 +13,15 @@ import matplotlib.dates as mdates
 #
 dbdir  = '/home/pi/repos/raumklima/database/'
 #dbdir  = '/Users/jcanton/SynologyDrive/githubStuff/raumklima/database/'
-nsensors = 5
+nsensors = 7
 snames = [
         'Sala',
         'Studio',
         'Camera',
         'Bagno',
-        'Cucina'
+        'Cucina',
+        'Balcone',
+        'Strada',
         ]
 
 #-------------------------------------------------------------------------------
@@ -75,6 +77,8 @@ def readDB(fpath):
     return table
 
 def doPlot(table, nback=0, figName='fig.png'):
+
+    nback = -min(table.shape[0], -nback)
 
     fig = plt.figure(1); fig.clear()
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, num=fig.number)

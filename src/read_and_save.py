@@ -4,8 +4,11 @@ from rs500reader.reader import Rs500Reader
 from datetime import datetime
 import time, os
 
-nsensors = 5
-maxTries = 10
+nsensors = 7
+maxTries = 20
+#            1    2    3    4    5    6    7
+offsetsT  = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+offsetsRH = [0,   0,   0,   0,   0,   0,   0  ]  
 
 def get_and_save():
 
@@ -39,7 +42,7 @@ def get_and_save():
         ofile = open(fpath + fname, 'a')
         ofile.write(tstamp)
         for i in range(len(cd)):
-            ofile.write(', {:4.1f} | {:2d}'.format(cd[i].temperature, cd[i].humidity))
+            ofile.write(', {:4.1f} | {:2d}'.format(cd[i].temperature + offsetsT[i], cd[i].humidity + offsetsRH[i]))
     
         ofile.write('\n')
         ofile.close()
