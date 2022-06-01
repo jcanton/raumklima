@@ -6,9 +6,9 @@ import time, os
 
 nsensors = 7
 maxTries = 20
-#            1    2    3    4    5    6    7
-offsetsT  = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-offsetsRH = [0,   0,   0,   0,   0,   0,   0  ]  
+#             1     2      3      4      5      6      7
+offsetsT  = [ 0.0,  0.37, -0.12,  0.02,  0.25,  0.05,  0.08]
+offsetsRH = [ 0,    0,     0,     0,     0,     0,     0   ]  
 
 def get_and_save():
 

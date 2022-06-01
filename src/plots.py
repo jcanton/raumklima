@@ -23,6 +23,8 @@ snames = [
         'Balcone',
         'Strada',
         ]
+limsT  = 
+limsRH = [25, 60]
 
 #-------------------------------------------------------------------------------
 # Classes
@@ -93,12 +95,12 @@ def doPlot(table, nback=0, figName='fig.png'):
                          box.width, box.height * 0.9])
     # Put a legend below current axis
     ax[1].legend(loc='upper center', bbox_to_anchor=(0.40, -0.10),
-                      fancybox=True, shadow=False, ncol=5, fontsize='small')
+                      fancybox=True, shadow=False, ncol=4, fontsize='small')
     ax[0].set_ylabel('Temp')
     ax[1].set_ylabel('RH')
     #ax[1].set_xlabel('Time')
     ax[1].set_xlim([table[max(nback, -table.shape[0]),0], table[-1,0]])
-    ax[1].set_ylim([25, 60])
+    #ax[1].set_ylim(limsRH)
     ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
     ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
     plt.draw()
