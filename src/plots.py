@@ -15,15 +15,15 @@ dbdir  = '/home/pi/repos/raumklima/database/'
 #dbdir  = '/Users/jcanton/SynologyDrive/githubStuff/raumklima/database/'
 nsensors = 7
 snames = [
-        'Sala',
+        'Livingrm',
         'Studio',
-        'Camera',
-        'Bagno',
-        'Cucina',
-        'Balcone',
-        'Strada',
+        'Bedrm',
+        'Bathrm',
+        'Kitchen',
+        'East',
+        'West',
         ]
-limsT  = 
+limsT  = [20, 30]
 limsRH = [25, 60]
 
 #-------------------------------------------------------------------------------
@@ -45,6 +45,8 @@ def Data():
         self.s3 = sensors[2]
         self.s4 = sensors[3]
         self.s5 = sensors[4]
+        self.s6 = sensors[5]
+        self.s7 = sensors[6]
 
 #-------------------------------------------------------------------------------
 # Functions
@@ -85,8 +87,12 @@ def doPlot(table, nback=0, figName='fig.png'):
     fig = plt.figure(1); fig.clear()
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, num=fig.number)
     for s in range(nsensors):
-        ax[0].plot(table[nback:, 0], table[nback:, 1+2*s]  )
-        ax[1].plot(table[nback:, 0], table[nback:, 1+2*s+1], label=snames[s])
+        if figName[0:3] != 'avg':
+            label = '{0:.1f} '.format(table[-1,1+2*s]) + snames[s]
+        else:
+            label = snames[s]
+        ax[0].plot(table[nback:, 0], table[nback:, 1+2*s])
+        ax[1].plot(table[nback:, 0], table[nback:, 1+2*s+1], label=label)
     ax[1].xaxis.set_major_formatter(
                 mdates.ConciseDateFormatter(ax[1].xaxis.get_major_locator()))
     # Shrink current axis's height by 10% on the bottom
