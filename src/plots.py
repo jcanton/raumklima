@@ -7,25 +7,29 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
-#-------------------------------------------------------------------------------
+#===============================================================================
 # Data
 #
-dbdir  = '/var/services/homes/jacopo/repos/raumklima/database'
+dbdir = '/var/services/homes/jacopo/repos/raumklima/database'
+dbdir = '/Volumes/home/repos/raumklima/database'
 nsensors = 7
 snames = [
+        'Kitchen',
         'Livingrm',
         'Studio',
         'Bedrm',
         'Bathrm',
-        'Kitchen',
         'East',
         'West',
         ]
 limsT  = [18, 27]
 limsRH = [40, 70]
+colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
-#-------------------------------------------------------------------------------
+#===============================================================================
 # Classes
 #
 def Sensor():
@@ -47,9 +51,10 @@ def Data():
         self.s6 = sensors[5]
         self.s7 = sensors[6]
 
-#-------------------------------------------------------------------------------
+#===============================================================================
 # Functions
 #
+#-------------------------------------------------------------------------------
 def readDB(fpath):
 
     # read database
@@ -79,7 +84,35 @@ def readDB(fpath):
 
     return table
 
-def doPlot(table, nback=0, figName='fig.png'):
+#-------------------------------------------------------------------------------
+def doPlotly(table, nback=0, figName='fig.html'):
+
+
+    nback = -min(table.shape[0], -nback)
+
+    fig = make_subplots(
+            rows=2, cols=1,
+            subplot_titles=("Temperature", "Relative Humidity"),
+            shared_xaxes=True,
+            vertical_spacing=0.04,
+            )
+
+    for s in range(nsensors):
+        label = snames[s]
+        fig.add_trace(go.Scatter(x=table[nback:, 0], y=table[nback:, 1+2*s  ], name=label,         mode='lines', line=dict(color=colors[s], width=2)), row=1, col=1)
+        fig.add_trace(go.Scatter(x=table[nback:, 0], y=table[nback:, 1+2*s+1], name=label.lower(), mode='lines', line=dict(color=colors[s], width=2)), row=2, col=1)
+
+    for trace in fig['data']: 
+        if(trace['name'].islower()): trace['showlegend'] = False
+    fig.update_layout(
+            height=800, width=800,
+            title_text="",
+            hovermode = 'x unified'
+            )
+    fig.write_html(os.path.join(dbdir, figName))
+
+#-------------------------------------------------------------------------------
+def doMatplotlib(table, nback=0, figName='fig.png'):
 
     nback = -min(table.shape[0], -nback)
 
@@ -131,7 +164,8 @@ def doPlot(table, nback=0, figName='fig.png'):
 #plt.plot(x,y)
 #plt.gcf().autofmt_xdate()
 
-def doAvgPlot(fpath, ndays=1):
+#-------------------------------------------------------------------------------
+def doAvgMatplotlib(fpath, ndays=1):
 
     # get files
     dbFiles = glob.glob(fpath+'*.csv')
@@ -158,8 +192,9 @@ def doAvgPlot(fpath, ndays=1):
                 runningAvg += table[i, 1:].astype(float)
                 ntsteps += 1
     avgTable = np.delete(avgTable, (0), axis=0)
-    doPlot(avgTable, nback=0, figName='avg_{0:02d}days.png'.format(ndays))
+    doMatplotlib(avgTable, nback=0, figName='avg_{0:02d}days.png'.format(ndays))
 
+#-------------------------------------------------------------------------------
 def read_and_plot(plotKind='avg'):
 
     now  = datetime.now()
@@ -171,11 +206,13 @@ def read_and_plot(plotKind='avg'):
     if plotKind == '24hrs':
         fname = 'w{:02d}.csv'.format(wnum)
         table = readDB(os.path.join(yearPath,fname))
-        doPlot(table, nback=-24*60, figName='24hrs.png')
+        doMatplotlib(table, nback=-24*60, figName='24hrs.png')
+        doPlotly    (table, nback=-24*60, figName='24hrs.html')
     elif plotKind == 'avg':
-        doAvgPlot(yearPath, ndays=1)
+        doAvgMatplotlib(yearPath, ndays=1)
 
 
+#===============================================================================
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description = "Make plots.")
