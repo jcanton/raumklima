@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 import glob
 import csv
 import numpy as np
@@ -23,8 +23,8 @@ snames = [
         'East',
         'West',
         ]
-limsT  = [20, 30]
-limsRH = [25, 60]
+limsT  = [18, 27]
+limsRH = [40, 70]
 
 #-------------------------------------------------------------------------------
 # Classes
@@ -86,6 +86,8 @@ def doPlot(table, nback=0, figName='fig.png'):
 
     fig = plt.figure(1); fig.clear()
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=True, num=fig.number)
+    limsT  = [1e6, -1e6]
+    limsRH = [1e6, -1e6]
     for s in range(nsensors):
         if figName[0:3] != 'avg':
             label = '{0:.1f} '.format(table[-1,1+2*s]) + snames[s]
@@ -93,6 +95,15 @@ def doPlot(table, nback=0, figName='fig.png'):
             label = snames[s]
         ax[0].plot(table[nback:, 0], table[nback:, 1+2*s])
         ax[1].plot(table[nback:, 0], table[nback:, 1+2*s+1], label=label)
+        #
+        if s <= 4:
+            limsT [0] = min(limsT [0], np.min(table[nback:, 1+2*s]))
+            limsT [1] = max(limsT [1], np.max(table[nback:, 1+2*s]))
+            limsRH[0] = min(limsRH[0], np.min(table[nback:, 1+2*s+1]))
+            limsRH[1] = max(limsRH[1], np.max(table[nback:, 1+2*s+1]))
+    limsT  = [limsT [0]-0.5, limsT [1]+0.5]
+    limsRH = [limsRH[0]-2.0, limsRH[1]+2.0]
+
     ax[1].xaxis.set_major_formatter(
                 mdates.ConciseDateFormatter(ax[1].xaxis.get_major_locator()))
     # Shrink current axis's height by 10% on the bottom
@@ -102,11 +113,13 @@ def doPlot(table, nback=0, figName='fig.png'):
     # Put a legend below current axis
     ax[1].legend(loc='upper center', bbox_to_anchor=(0.40, -0.10),
                       fancybox=True, shadow=False, ncol=4, fontsize='small')
+    ax[0].set_ylim(limsT)
+    ax[1].set_ylim(limsRH)
+    #ax[1].set_xlim([table[max(nback, -table.shape[0]),0], table[-1,0]])
+    ax[1].set_xlim([(table[-1,0]-timedelta(days=1)), table[-1,0]])
     ax[0].set_ylabel('Temp')
     ax[1].set_ylabel('RH')
     #ax[1].set_xlabel('Time')
-    ax[1].set_xlim([table[max(nback, -table.shape[0]),0], table[-1,0]])
-    #ax[1].set_ylim(limsRH)
     ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
     ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
     plt.draw()
