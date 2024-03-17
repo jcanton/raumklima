@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse
+import os, argparse
 from datetime import datetime, timedelta
 import glob
 import csv
@@ -11,8 +11,7 @@ import matplotlib.dates as mdates
 #-------------------------------------------------------------------------------
 # Data
 #
-dbdir  = '/home/pi/repos/raumklima/database/'
-#dbdir  = '/Users/jcanton/SynologyDrive/githubStuff/raumklima/database/'
+dbdir  = '/var/services/homes/jacopo/repos/raumklima/database'
 nsensors = 7
 snames = [
         'Livingrm',
@@ -123,7 +122,7 @@ def doPlot(table, nback=0, figName='fig.png'):
     ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
     ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
     plt.draw()
-    plt.savefig(dbdir + figName, dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(dbdir, figName), dpi=300, bbox_inches='tight')
     #pickle.dump(fig, open(dbdir + '24hrs.fig.pickle', 'wb'))
     #print('saved 24hrs')
 
@@ -167,11 +166,11 @@ def read_and_plot(plotKind='avg'):
     year = now.year
     wnum = now.isocalendar()[1]
 
-    yearPath = dbdir + '{:4d}/'.format(year)
+    yearPath = os.path.join(dbdir, '{:4d}'.format(year))
 
     if plotKind == '24hrs':
         fname = 'w{:02d}.csv'.format(wnum)
-        table = readDB(yearPath+fname)
+        table = readDB(os.path.join(yearPath,fname))
         doPlot(table, nback=-24*60, figName='24hrs.png')
     elif plotKind == 'avg':
         doAvgPlot(yearPath, ndays=1)

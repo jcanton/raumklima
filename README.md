@@ -203,3 +203,8 @@ Das wars.
 Die Tests befinden sich in `src/test`. Für die Durchführung der Tests sind die zusätzlichen Abhängigkeiten aus `requirements-test.txt` erforderlich.
 
 Zur Testausführung im Ordner `src` einfach `py.test --cov --cov-report term-missing --cov-config .coveragerc test/` aufrufen.
+
+synosystemctl restart crond
+synosystemctl restart synocrond
+synosystemctl restart synoscheduled
+synosystemctl restart synoscheduler

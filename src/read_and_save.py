@@ -18,7 +18,7 @@ class Dummy:
 def get_and_save():
 
     reader = Rs500Reader()
-    dbdir  = '/home/pi/repos/raumklima/database/'
+    dbdir  = '/volume1/homes/jacopo/repos/raumklima/database'
 
     now  = datetime.now()
     tstamp = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -26,7 +26,7 @@ def get_and_save():
     year = now.year
     wnum = now.isocalendar()[1]
 
-    fpath = dbdir + '{:4d}/'.format(year)
+    fpath = os.path.join(dbdir, '{:4d}'.format(year))
     fname = 'w{:02d}.csv'.format(wnum)
 
     if not os.path.isdir(fpath):
@@ -62,7 +62,7 @@ def get_and_save():
 
 
     if len(cd) == nsensors:
-        ofile = open(fpath + fname, 'a')
+        ofile = open(os.path.join(fpath, fname), 'a')
         ofile.write(tstamp)
         for i in range(len(cd)):
             ofile.write(', {:4.1f} | {:2.1f}'.format(cd[i].temperature + offsetsT[i], float(cd[i].humidity + offsetsRH[i])))
@@ -85,13 +85,13 @@ def get_and_save_repeat():
         year = now.year
         wnum = now.isocalendar()[1]
 
-        fpath = dbdir + '{:4d}/'.format(year)
+        fpath = os.path.join(dbdir, '{:4d}'.format(year))
         fname = 'w{:02d}.csv'.format(wnum)
 
         if not os.path.isdir(fpath):
             os.makedirs(fpath)
 
-        ofile = open(fpath + fname, 'a')
+        ofile = open(os.path.join(fpath, fname), 'a')
         ofile.write(tstamp)
 
         for i in range(1, 9, 1):

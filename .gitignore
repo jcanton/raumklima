@@ -168,3 +168,5 @@ pyvenv.cfg
 pip-selfcheck.json
 
 .pytest_cache/
+database
+log.txt
