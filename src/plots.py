@@ -13,8 +13,8 @@ import plotly.graph_objects as go
 #===============================================================================
 # Data
 #
-dbdir = '/var/services/homes/jacopo/repos/raumklima/database'
-dbdir = '/Volumes/home/repos/raumklima/database'
+dbdir  = '/var/services/homes/jacopo/repos/raumklima/database'
+figdir = '/var/services/web/web_images/'
 nsensors = 7
 snames = [
         'Kitchen',
@@ -105,11 +105,11 @@ def doPlotly(table, nback=0, figName='fig.html'):
     for trace in fig['data']: 
         if(trace['name'].islower()): trace['showlegend'] = False
     fig.update_layout(
-            height=800, width=800,
+            height=800, width=700,
             title_text="",
             hovermode = 'x unified'
             )
-    fig.write_html(os.path.join(dbdir, figName))
+    fig.write_html(os.path.join(figdir, figName))
 
 #-------------------------------------------------------------------------------
 def doMatplotlib(table, nback=0, figName='fig.png'):
@@ -155,8 +155,8 @@ def doMatplotlib(table, nback=0, figName='fig.png'):
     ax[0].grid(visible=True, which='major', axis='y', alpha=0.3)
     ax[1].grid(visible=True, which='major', axis='y', alpha=0.3)
     plt.draw()
-    plt.savefig(os.path.join(dbdir, figName), dpi=300, bbox_inches='tight')
-    #pickle.dump(fig, open(dbdir + '24hrs.fig.pickle', 'wb'))
+    plt.savefig(os.path.join(figdir, figName), dpi=300, bbox_inches='tight')
+    #pickle.dump(fig, open(figdir + '24hrs.fig.pickle', 'wb'))
     #print('saved 24hrs')
 
 #plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m/%d/%Y'))
