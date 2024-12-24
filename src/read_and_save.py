@@ -66,7 +66,14 @@ def get_and_save():
         ofile.write(tstamp)
         for i in range(len(cd)):
             ofile.write(', {:4.1f} | {:2.1f}'.format(cd[i].temperature + offsetsT[i], float(cd[i].humidity + offsetsRH[i])))
-    
+        ofile.write('\n')
+        ofile.close()
+
+        #ofile = open(os.path.join(dbdir, 'last_reading.csv'), 'w')
+        ofile = open("/volume1/docker/homeassistant/config/sensors/raumklima.csv", "w")
+        ofile.write(tstamp)
+        for i in range(len(cd)):
+            ofile.write(', {:4.1f}, {:2.1f}'.format(cd[i].temperature + offsetsT[i], float(cd[i].humidity + offsetsRH[i])))
         ofile.write('\n')
         ofile.close()
 
