@@ -4,8 +4,8 @@ const sensorNames = [
     'Studio',
     'Bedrm',
     'Bathrm',
-    'East',
-    'West',
+    'Balcony',
+    'Window',
 ];
 const nsensors = 7;
 
@@ -93,10 +93,15 @@ function updateChart(timestamps, sensorData) {
         });
     });
 
+    // Dynamically set width and height based on window size
+    const chartWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    // Height is proportional to width, but not less than 400px
+    const chartHeight = Math.max(Math.round(chartWidth * 1.1), 400);
+
     var layout = {
         title: '',
-        height: 800,
-        width: 700,
+        height: chartHeight,
+        width: chartWidth,
         hovermode:'closest',
         grid: {
             rows: 2,
@@ -157,6 +162,12 @@ function updateChart(timestamps, sensorData) {
 
     Plotly.newPlot('tempHumChart', data, layout, config);
 
+    // Optionally, update chart size on window resize
+    window.onresize = function() {
+        const newWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const newHeight = Math.max(Math.round(newWidth * 1.1), 400);
+        Plotly.relayout('tempHumChart', {width: newWidth, height: newHeight});
+    };
 };
 
 // Call the fetchDataAndUpdateChart function for a specific year and week when the page is loaded
